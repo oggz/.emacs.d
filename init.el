@@ -357,59 +357,60 @@
 
 ;;; Libraries ++++++++++++++++++++++++++++++++++++++++++++++++++
 
-(use-package exwm
-  :ensure t
-  :config
-  (require 'exwm-config)
-  (exwm-config-default)
-  (require 'exwm-systemtray)
-  (exwm-systemtray-enable)
-  (setq exwm-systemtray-height 16)
-  (setq exwm-input-simulation-keys
-        '(([?\C-x?\C-s] . [?\C-s])
-          ([?\C-c?\C-p] . [?\C-p])
-          ([?\C-s] . [?\C-f])
-          ([?\M-w] . [?\C-c])
-          ([?\C-y] . [?\C-v])
-          ([?\C-b] . [left])
-          ;([?\C-M-b] . [?\M-left])
-          ([?\C-f] . [right])
-          ;([?\C-M-b] . [?\M-right])
-          ([?\C-p] . [up])
-          ([?\C-n] . [down])
-          ([?\C-a] . [home])
-          ([?\C-e] . [end])
-          ([?\M-v] . [prior])
-          ([?\C-v] . [next])
-          ([?\C-d] . [delete])
-          ([?\C-k] . [S-end delete])))
-  (setq exwm-workspace-number 4)
-  (add-hook 'exwm-update-class-hook
-            (lambda ()
-              (unless (or (string-prefix-p "sun-awt-X11-" exwm-instance-name)
+(when (eq window-system 'x)
+  (use-package exwm
+    :ensure t
+    :config
+    (require 'exwm-config)
+    (exwm-config-default)
+    (require 'exwm-systemtray)
+    (exwm-systemtray-enable)
+    (setq exwm-systemtray-height 16)
+    (setq exwm-input-simulation-keys
+          '(([?\C-x?\C-s] . [?\C-s])
+            ([?\C-c?\C-p] . [?\C-p])
+            ([?\C-s] . [?\C-f])
+            ([?\M-w] . [?\C-c])
+            ([?\C-y] . [?\C-v])
+            ([?\C-b] . [left])
+                                        ;([?\C-M-b] . [?\M-left])
+            ([?\C-f] . [right])
+                                        ;([?\C-M-b] . [?\M-right])
+            ([?\C-p] . [up])
+            ([?\C-n] . [down])
+            ([?\C-a] . [home])
+            ([?\C-e] . [end])
+            ([?\M-v] . [prior])
+            ([?\C-v] . [next])
+            ([?\C-d] . [delete])
+            ([?\C-k] . [S-end delete])))
+    (setq exwm-workspace-number 4)
+    (add-hook 'exwm-update-class-hook
+              (lambda ()
+                (unless (or (string-prefix-p "sun-awt-X11-" exwm-instance-name)
+                            (string= "gimp" exwm-instance-name))
+                  (exwm-workspace-rename-buffer exwm-class-name))))
+    (add-hook 'exwm-update-title-hook
+              (lambda ()
+                (when (or (not exwm-instance-name)
+                          (string-prefix-p "sun-awt-X11-" exwm-instance-name)
                           (string= "gimp" exwm-instance-name))
-                (exwm-workspace-rename-buffer exwm-class-name))))
-  (add-hook 'exwm-update-title-hook
-            (lambda ()
-              (when (or (not exwm-instance-name)
-                        (string-prefix-p "sun-awt-X11-" exwm-instance-name)
-                        (string= "gimp" exwm-instance-name))
-                (exwm-workspace-rename-buffer exwm-title))))
-  (setq exwm-input-global-keys
-        `(([?\s-r] . exwm-reset)
-          ([?\s-w] . exwm-workspace-switch)
-          ,@(mapcar (lambda (i)
-                      `(,(kbd (format "s-%d" i)) .
-                        (lambda ()
-                          (interactive)
-                          (exwm-workspace-switch-create ,i))))
-                    (number-sequence 0 9))
-          ([?\s-&] . (lambda (command)
-		       (interactive (list (read-shell-command "$ ")))
-		       (start-process-shell-command command nil command)))
-          ([s-f2] . (lambda ()
-		      (interactive)
-		      (start-process "" nil "/usr/bin/slock"))))))
+                  (exwm-workspace-rename-buffer exwm-title))))
+    (setq exwm-input-global-keys
+          `(([?\s-r] . exwm-reset)
+            ([?\s-w] . exwm-workspace-switch)
+            ,@(mapcar (lambda (i)
+                        `(,(kbd (format "s-%d" i)) .
+                          (lambda ()
+                            (interactive)
+                            (exwm-workspace-switch-create ,i))))
+                      (number-sequence 0 9))
+            ([?\s-&] . (lambda (command)
+		         (interactive (list (read-shell-command "$ ")))
+		         (start-process-shell-command command nil command)))
+            ([s-f2] . (lambda ()
+		        (interactive)
+		        (start-process "" nil "/usr/bin/slock")))))))
 
 (use-package slime
   :commands slime
